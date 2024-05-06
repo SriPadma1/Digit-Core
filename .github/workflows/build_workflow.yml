@@ -1,9 +1,13 @@
 name: Build Pipeline
 on:
-  workflow_dispatch:
   push:
     branches:
       - '*'
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Select the branch'
+        required: true
 jobs:
   list-branches:
     runs-on: ubuntu-latest
