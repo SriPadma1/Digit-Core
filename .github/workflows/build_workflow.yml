@@ -1,16 +1,24 @@
 name: Build Pipeline
 on:
-  push:
-    branches:
-      - '*'
   workflow_dispatch:
     inputs:
       branch:
         description: 'Select the branch'
         required: true
+        default: 'master'
 jobs:
   list-branches:
     runs-on: ubuntu-latest
     steps:
+      - name: Check if workflow dispatch is triggered
+        if: github.event_name == 'workflow_dispatch'
+        run: echo "Workflow dispatched to branch: ${{ github.event.inputs.branch }}"
+
+      - name: Check out the code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
       - name: Displaying the branch name
+        id: branch-name
         run: echo ${{ github.ref_name }}
