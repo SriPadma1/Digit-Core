@@ -16,6 +16,10 @@ on:
       serviceName:
         description: 'Provide the service name you want to build'
         required: true
+      dbMigration:
+        description: Enable if you require db migration to this service
+        required: true
+        type: boolean
 jobs:
   Build:
     runs-on: ubuntu-latest
