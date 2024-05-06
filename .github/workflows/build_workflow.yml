@@ -6,8 +6,17 @@ on:
         description: 'Select the branch'
         required: true
         default: 'master'
+      folder:
+        description: 'Select the folder which contain your services'
+        required: true
+        options:
+          - core-services
+          - business-services
+      serviceName:
+        description: 'Provide the service name you want to build'
+        required: true
 jobs:
-  list-branches:
+  Build:
     runs-on: ubuntu-latest
     steps:
       - name: Check if workflow dispatch is triggered
@@ -27,3 +36,7 @@ jobs:
         with:
           name: core-services-artifact
           path: core-services.tar.gz
+
+      - name: Change working directory
+        run: pwd
+        working-directory: ${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}
