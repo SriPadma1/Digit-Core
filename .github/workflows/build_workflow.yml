@@ -10,10 +10,5 @@ jobs:
   list-branches:
     runs-on: ubuntu-latest
     steps:
-      - name: List Branches
-        id: list_branches
-        uses: softprops/action-repo-branches@v1
-        with:
-          token: ${{ secrets.ACCESS_TOKEN }}
       - name: Displaying the branch name
         run: echo "${{ github.event.inputs.branch }}"
