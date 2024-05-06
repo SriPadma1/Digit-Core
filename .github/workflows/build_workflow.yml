@@ -1,9 +1,0 @@
-name: Build Pipeline
-on:
-  workflow_dispatch:
-jobs:
-  list-branches:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Displaying the branch name
-        run: echo ${{ github.ref_name }}
