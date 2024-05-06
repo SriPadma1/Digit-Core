@@ -5,7 +5,6 @@ on:
       branch:
         description: 'Select the branch'
         required: true
-        options: ${{ steps.list_branches.outputs.branches }}
         default: main
 jobs:
   list-branches:
