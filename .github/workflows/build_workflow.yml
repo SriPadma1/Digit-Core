@@ -17,4 +17,4 @@ jobs:
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
       - name: Displaying the branch name
-        run: echo ${{ inputs.branch }} 
+        run: echo "${{ github.event.inputs.branch }}"
