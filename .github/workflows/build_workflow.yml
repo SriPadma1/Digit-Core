@@ -1,0 +1,20 @@
+name: Build Pipeline
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Select the branch'
+        required: true
+        options: ${{ steps.list_branches.outputs.branches }}
+        default: main
+jobs:
+  list-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List Branches
+        id: list_branches
+        uses: softprops/action-repo-branches@v1
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+      - name: Displaying the branch name
+        run: echo ${{ inputs.branch }} 
