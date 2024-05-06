@@ -18,6 +18,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.branch }}
+        run: echo ${{ github.ref_name }}
 
       - name: Displaying the branch name
         id: branch-name
