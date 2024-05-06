@@ -19,6 +19,11 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch }}
 
-      - name: Displaying the branch name
-        id: branch-name
-        run: echo ${{ github.ref_name }}
+      - name: Archive core-services folder
+        run: tar -czf core-services.tar.gz core-services/
+
+      - name: Upload core-services folder as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: core-services-artifact
+          path: core-services.tar.gz
