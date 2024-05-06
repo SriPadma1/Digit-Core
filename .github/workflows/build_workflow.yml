@@ -9,6 +9,7 @@ on:
       folder:
         description: 'Select the folder which contain your services'
         required: true
+        type: choice
         options:
           - core-services
           - business-services
