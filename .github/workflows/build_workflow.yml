@@ -11,4 +11,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Displaying the branch name
-        run: echo ${{ GITHUB_REF_NAME }}
+        run: echo ${{ github.ref.name }}
