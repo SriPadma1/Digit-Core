@@ -29,7 +29,7 @@ jobs:
         run: echo "Workflow dispatched to branch ${{ github.event.inputs.branch }}"
 
       - name: Check out the code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.branch }}
 
@@ -37,7 +37,7 @@ jobs:
         run: tar -czf business-services.tar.gz business-services/
 
       - name: Upload business-services folder as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: business-services-artifact
           path: business-services.tar.gz
