@@ -48,8 +48,7 @@ jobs:
           file: build/maven/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ github.event.inputs.branch }}
-          env: 
-            WORK_DIR: ${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}
+          build-args: WORK_DIR=${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}
 
       - name: Archive core-services folder
         run: tar -czf core-services.tar.gz core-services/
