@@ -45,7 +45,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: 
             work-dir: "core-services/audit-service"
           file: /build/maven/Dockerfile
           push: true
