@@ -48,7 +48,7 @@ jobs:
           context: "core-services/audit-service"
           file: /build/maven/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.inputs.serviceName }}:${{ github.event.inputs.branch }}
+          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ github.event.inputs.branch }}
 
       - name: Archive core-services folder
         run: tar -czf core-services.tar.gz core-services/
