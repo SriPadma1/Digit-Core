@@ -58,7 +58,7 @@ jobs:
         run: git branch
 
       - name: Build and push
-        if: github.ref == 'refs/heads/${{ github.event.inputs.branch }}'
+        # if: github.ref == 'refs/heads/${{ github.event.inputs.branch }}'
         uses: docker/build-push-action@v5
         with:
           file: build/maven/Dockerfile
