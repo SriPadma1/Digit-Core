@@ -49,7 +49,6 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ github.event.inputs.branch }}
           build-args: WORK_DIR=${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}
-          ref: ${{ github.event.inputs.branch }}
 
       - name: Archive core-services folder
         run: tar -czf core-services.tar.gz core-services/
