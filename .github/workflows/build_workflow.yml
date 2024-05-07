@@ -65,6 +65,16 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ github.event.inputs.branch }}
           build-args: WORK_DIR=${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}
+        
+      - name: DB Build and push
+        # if: github.ref == 'refs/heads/${{ github.event.inputs.branch }}'
+        if: ${{ github.event.inputs.dbMigration }} 
+        uses: docker/build-push-action@v5
+        with:
+          file: build/maven/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}-db:${{ github.event.inputs.branch }}
+          build-args: WORK_DIR=${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}/src/main/resources/db
 
       - name: Display branch name
         run: git branch
