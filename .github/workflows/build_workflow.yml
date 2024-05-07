@@ -45,8 +45,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: 
-            work-dir: "core-services/audit-service"
+          context: "core-services/audit-service"
           file: /build/maven/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.inputs.serviceName }}:${{ github.event.inputs.branch }}
