@@ -33,14 +33,14 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch }}
 
-      - name: Archive core-services folder
-        run: tar -czf core-services.tar.gz core-services/
+      - name: Archive business-services folder
+        run: tar -czf business-services.tar.gz business-services/
 
-      - name: Upload core-services folder as artifact
+      - name: Upload business-services folder as artifact
         uses: actions/upload-artifact@v2
         with:
-          name: core-services-artifact
-          path: core-services.tar.gz
+          name: business-services-artifact
+          path: business-services.tar.gz
       
       - name: Login to Docker Hub
         uses: docker/login-action@v3
