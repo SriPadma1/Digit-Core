@@ -1,11 +1,10 @@
 name: Build Pipeline
 on:
+  push:
+    branches:
+      - 'master'
   workflow_dispatch:
     inputs:
-      branch:
-        description: 'Select the branch'
-        required: true
-        default: 'master'
       folder:
         description: 'Select the folder which contain your services'
         required: true
@@ -22,16 +21,14 @@ on:
         type: boolean
 jobs:
   Build:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
-    steps:
-      - name: Check if workflow dispatch is triggered
-        if: github.event_name == 'workflow_dispatch'
-        run: echo "Workflow dispatched to branch ${{ github.event.inputs.branch }}"
-
+    steps: 
       - name: Check out the code
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.inputs.branch }}
+
+      - name: What
+        run: echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
 
       - name: Display branch name
         run: git branch
@@ -58,12 +55,11 @@ jobs:
         run: git branch
 
       - name: Build and push
-        # if: github.ref == 'refs/heads/${{ github.event.inputs.branch }}'
         uses: docker/build-push-action@v5
         with:
           file: build/maven/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ github.event.inputs.branch }}
+          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}
           build-args: WORK_DIR=${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}
         
       - name: DB Build and push
@@ -71,10 +67,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}/src/main/resources/db
-          file: ${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}/src/main/resources/db/Dockerfile
+          file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}-db:${{ github.event.inputs.branch }}
-
-      - name: Display branch name
-        run: git branch
+          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}-db:${{ env.BRANCH }}
 
