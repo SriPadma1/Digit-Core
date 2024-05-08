@@ -30,7 +30,7 @@ jobs:
       - name: What
         run: |
           echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
-          echo "${{ env.BRANCH }}"
+          echo "BRANCH=${GITHUB_REF##*/}"
 
       - name: Display branch name
         run: git branch
