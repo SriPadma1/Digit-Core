@@ -19,6 +19,10 @@ on:
         description: Enable if you require db migration to this service
         required: true
         type: boolean
+      libraries:
+        description: Enable if you want to upload to libraries
+        required: true
+        type: boolean
 jobs:
   Build:
     if: ${{ github.event_name == 'workflow_dispatch' }}
@@ -73,4 +77,17 @@ jobs:
           file: ${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}/src/main/resources/db/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}-db:${{ env.BRANCH }}
+
+      - name: Libraries Build and push
+        if: ${{ github.event.inputs.libraries }} 
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}
+          build-args: |
+            WORK_DIR=${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
+            nexusUsername=${{ secrets.NEXUS_USER }}
+            nexusPassword=${{ secrets.NEXUS_PWD }}
 
