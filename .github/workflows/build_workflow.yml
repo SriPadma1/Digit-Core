@@ -2,7 +2,7 @@ name: Build Pipeline
 on:
   push:
     branches:
-      - 'master'
+      - 'core-2.9-lts-mvn-check-cherry-pick'
   workflow_dispatch:
     inputs:
       folder:
