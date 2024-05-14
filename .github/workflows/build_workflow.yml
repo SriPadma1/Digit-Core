@@ -91,4 +91,11 @@ jobs:
             WORK_DIR=${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
             nexusUsername=${{ secrets.NEXUS_USER }}
             nexusPassword=${{ secrets.NEXUS_PWD }}
+      
+      - name: View Dockerfile
+        if: ${{ github.event.inputs.libraries }} 
+        run: |
+          cat ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}/Dockerfile
+
+
 
