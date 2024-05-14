@@ -1,0 +1,101 @@
+name: Build Pipeline
+on:
+  push:
+    branches:
+      - 'core-2.9-lts-mvn'
+  workflow_dispatch:
+    inputs:
+      folder:
+        description: 'Select the folder which contain your services'
+        required: true
+        type: choice
+        options:
+          - core-services
+          - business-services
+      serviceName:
+        description: 'Provide the service name you want to build'
+        required: true
+      dbMigration:
+        description: Enable if you require db migration to this service
+        required: true
+        type: boolean
+      libraries:
+        description: Enable if you want to upload to libraries
+        required: true
+        type: boolean
+jobs:
+  Build:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: What
+        run: |
+          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          echo "BRANCH=${GITHUB_REF##*/}"
+
+      - name: Display branch name
+        run: git branch
+
+      - name: Archive business-services folder
+        run: tar -czf business-services.tar.gz business-services/
+
+      - name: Upload business-services folder as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: business-services-artifact
+          path: business-services.tar.gz
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_PWD }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Display branch name
+        run: git branch
+
+      - name: Build and push
+        if: ${{ github.event.inputs.libraries == 'false' }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: build/maven/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}
+          build-args: WORK_DIR=${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}
+        
+      - name: DB Build and push
+        if: ${{ github.event.inputs.dbMigration && github.event.inputs.libraries == 'false' }} 
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}/src/main/resources/db
+          file: ${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}/src/main/resources/db/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}-db:${{ env.BRANCH }}
+
+      - name: Libraries Build and push
+        if: ${{ github.event.inputs.libraries }} 
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
+          file: ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}
+          build-args: |
+            WORK_DIR=${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
+            nexusUsername=${{ secrets.NEXUS_USER }}
+            nexusPassword=${{ secrets.NEXUS_PWD }}
+      
+      - name: View Dockerfile
+        if: ${{ github.event.inputs.libraries }} 
+        run: |
+          cat ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}/Dockerfile
+
+
+
