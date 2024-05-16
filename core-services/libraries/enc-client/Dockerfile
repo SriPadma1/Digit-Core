@@ -18,4 +18,4 @@ COPY ${WORK_DIR}/src ./src
 RUN cd ${WORK_DIR} \
     && mvn -B -f /app/pom.xml test verify deploy -s settings.xml  \
     -Dnexus.user=${nexusUsername} -Dnexus.password=${nexusPassword}
-FROM scratch
+# FROM scratch

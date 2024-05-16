@@ -70,19 +70,18 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}-db:${{ env.BRANCH }}
 
-      # - name: Libraries Build and push
-      #   if: ${{ github.event.inputs.libraries }} 
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}/nginx-dockerfile
-      #     push: true
-      #     tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}
-      #     no-cache: true
-      #     build-args: |
-      #       WORK_DIR=${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
-      #       nexusUsername=${{ secrets.NEXUS_USER }}
-      #       nexusPassword=${{ secrets.NEXUS_PWD }}
+      - name: Libraries Build and push
+        if: ${{ github.event.inputs.libraries }} 
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}/nginx-dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}
+          build-args: |
+            WORK_DIR=${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
+            nexusUsername=${{ secrets.NEXUS_USER }}
+            nexusPassword=${{ secrets.NEXUS_PWD }}
 
       # - name: Build Libraries
       #   if: ${{ github.event.inputs.libraries }} 
