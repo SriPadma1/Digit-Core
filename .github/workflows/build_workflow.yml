@@ -83,7 +83,7 @@ jobs:
         if: ${{ github.event.inputs.libraries }} 
         uses: docker/build-push-action@v5
         with:
-          context: ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
+          context: .
           file: ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}
