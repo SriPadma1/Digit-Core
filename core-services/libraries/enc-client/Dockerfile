@@ -5,7 +5,7 @@ ARG nexusPassword
 WORKDIR /app
 
 # Install Maven
-RUN apk add --no-cache maven
+RUN echo "Installing Maven" && apk add --no-cache maven
 
 # copy the project files
 COPY ${WORK_DIR}/pom.xml ./pom.xml
