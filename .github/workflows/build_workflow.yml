@@ -87,7 +87,7 @@ jobs:
           file: ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}
-          cache: false
+          no-cache: true
           build-args: |
             WORK_DIR=${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
             nexusUsername=${{ secrets.NEXUS_USER }}
