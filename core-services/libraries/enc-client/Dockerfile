@@ -15,6 +15,7 @@ COPY ${WORK_DIR}/settings.xml ./settings.xml
 COPY ${WORK_DIR}/src ./src
 # not useful for stateless builds
 # RUN mvn -B dependency:go-offline
+RUN pwd
 RUN cd ${WORK_DIR} \
     && mvn -B -f /app/pom.xml test verify deploy -s settings.xml  \
     -Dnexus.user=${nexusUsername} -Dnexus.password=${nexusPassword}
