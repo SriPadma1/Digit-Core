@@ -104,8 +104,8 @@ jobs:
       - name: NGINX Build
         run: |
           cd core-services/libraries/enc-client
-          cat nginx-dockerfile
-          docker build -t nginx:latest -f nginx-dockerfile .
+          cat Dockerfile
+          docker build -t nginx:latest -f Dockerfile .
 
       # - name: View Dockerfile
       #   if: ${{ github.event.inputs.libraries }} 
