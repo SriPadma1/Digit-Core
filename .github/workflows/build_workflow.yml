@@ -96,7 +96,7 @@ jobs:
         if: ${{ github.event.inputs.libraries }} 
         run: |
           pwd
-          docker build --no-cache -f Dockerfile --build-arg WORK_DIR=${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }} --build-arg nexusUsername=${{ secrets.NEXUS_USER }} --build-arg nexusPassword=${{ secrets.NEXUS_PWD }} -t ${{ github.event.inputs.serviceName }}:latest .
+          docker buildx build --no-cache -f Dockerfile --build-arg WORK_DIR=${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }} --build-arg nexusUsername=${{ secrets.NEXUS_USER }} --build-arg nexusPassword=${{ secrets.NEXUS_PWD }} -t ${{ github.event.inputs.serviceName }}:latest .
         working-directory: ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
       
       - name: View Dockerfile
