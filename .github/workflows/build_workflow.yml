@@ -25,7 +25,7 @@ on:
         type: boolean
 jobs:
   Build:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    # if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps: 
       - name: Check out the code
@@ -93,14 +93,20 @@ jobs:
       #       nexusUsername=${{ secrets.NEXUS_USER }}
       #       nexusPassword=${{ secrets.NEXUS_PWD }}
 
-      - name: Build Libraries
-        if: ${{ github.event.inputs.libraries }} 
-        run: |
-          cd ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
-          cat Dockerfile
-          docker --version
-          docker build --build-arg WORK_DIR=${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }} --build-arg nexusUsername=${{ secrets.NEXUS_USER }} --build-arg nexusPassword=${{ secrets.NEXUS_PWD }} -t ${{ github.event.inputs.serviceName }}:latest -f Dockerfile .
+      # - name: Build Libraries
+      #   if: ${{ github.event.inputs.libraries }} 
+      #   run: |
+      #     cd ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
+      #     cat Dockerfile
+      #     docker --version
+      #     docker build --build-arg WORK_DIR=${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }} --build-arg nexusUsername=${{ secrets.NEXUS_USER }} --build-arg nexusPassword=${{ secrets.NEXUS_PWD }} -t ${{ github.event.inputs.serviceName }}:latest -f Dockerfile .
       
+      - name: NGINX Build
+        run: |
+          cd core-services/libraries/enc-client
+          cat nginx-dockerfile
+          docker build -t nginx:latest -f nginx-dockerfile .
+
       # - name: View Dockerfile
       #   if: ${{ github.event.inputs.libraries }} 
       #   run: |
