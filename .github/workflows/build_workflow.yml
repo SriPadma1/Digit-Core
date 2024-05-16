@@ -97,6 +97,8 @@ jobs:
         if: ${{ github.event.inputs.libraries }} 
         run: |
           cd ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
+          cat Dockerfile
+          docker --version
           docker build --build-arg WORK_DIR=${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }} --build-arg nexusUsername=${{ secrets.NEXUS_USER }} --build-arg nexusPassword=${{ secrets.NEXUS_PWD }} -t ${{ github.event.inputs.serviceName }}:latest -f Dockerfile .
       
       # - name: View Dockerfile
