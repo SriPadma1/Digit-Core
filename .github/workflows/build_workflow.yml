@@ -79,18 +79,24 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}-db:${{ env.BRANCH }}
 
-      - name: Libraries Build and push
+      # - name: Libraries Build and push
+      #   if: ${{ github.event.inputs.libraries }} 
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
+      #     file: ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}/Dockerfile
+      #     push: true
+      #     tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}
+      #     build-args: |
+      #       WORK_DIR=${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
+      #       nexusUsername=${{ secrets.NEXUS_USER }}
+      #       nexusPassword=${{ secrets.NEXUS_PWD }}
+
+      - name: Build Libraries
         if: ${{ github.event.inputs.libraries }} 
-        uses: docker/build-push-action@v5
-        with:
-          context: ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
-          file: ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}/Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}
-          build-args: |
-            WORK_DIR=${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
-            nexusUsername=${{ secrets.NEXUS_USER }}
-            nexusPassword=${{ secrets.NEXUS_PWD }}
+        run: |
+          docker build --build-arg WORK_DIR=${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }} --build-arg nexusUsername=${{ secrets.NEXUS_USER }} --build-arg nexusPassword=${{ secrets.NEXUS_PWD }} -t ${{ github.event.inputs.serviceName }}
+        working-directory: ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
       
       - name: View Dockerfile
         if: ${{ github.event.inputs.libraries }} 
