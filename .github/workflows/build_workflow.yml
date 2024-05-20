@@ -75,7 +75,7 @@ jobs:
       
       - name: DB Build and push
         # if: ${{ github.event.inputs.dbMigration && github.event.inputs.libraries == 'false' }} 
-        if: ${{ env.folder_exists == 'true' }} && ${{ github.event.inputs.libraries == 'false' }}
+        if: env.folder_exists == 'true' && github.event.inputs.libraries == 'false'
         uses: docker/build-push-action@v5
         with:
           context: ${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}/src/main/resources/db
