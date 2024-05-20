@@ -60,9 +60,19 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}
           build-args: WORK_DIR=${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}
+
+      - name: Check if folder exists
+        id: check_folder
+        run: |
+          if [ -d "${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}/src/main/resources/db" ]; then
+            echo "folder_exists=true" >> $GITHUB_ENV
+          else
+            echo "folder_exists=false" >> $GITHUB_ENV
+          fi
         
       - name: DB Build and push
-        if: ${{ github.event.inputs.dbMigration && github.event.inputs.libraries == 'false' }} 
+        # if: ${{ github.event.inputs.dbMigration && github.event.inputs.libraries == 'false' }} 
+        if: env.folder_exists == 'true' && ${{ github.event.inputs.libraries == 'false' }}
         uses: docker/build-push-action@v5
         with:
           context: ${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}/src/main/resources/db
