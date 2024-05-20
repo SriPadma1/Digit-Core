@@ -51,7 +51,7 @@ jobs:
       - name: Display branch name
         run: git branch
 
-      - name: Check if folder exists
+      - name: Check if DB folder exists
         id: check_folder
         run: |
           if [ -d "${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}/src/main/resources/db" ]; then
@@ -59,7 +59,7 @@ jobs:
           else
             echo "folder_exists=false" >> $GITHUB_ENV
           fi
-      - name: check Environment Variable
+      - name: check DB Environment Variable
         run: |
           echo ${{ env.folder_exists }}
 
@@ -75,7 +75,7 @@ jobs:
       
       - name: DB Build and push
         # if: ${{ github.event.inputs.dbMigration && github.event.inputs.libraries == 'false' }} 
-        if: env.folder_exists == 'true' && ${{ github.event.inputs.libraries == 'false' }}
+        if: ${{ env.folder_exists == 'true' }} && ${{ github.event.inputs.libraries == 'false' }}
         uses: docker/build-push-action@v5
         with:
           context: ${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}/src/main/resources/db
