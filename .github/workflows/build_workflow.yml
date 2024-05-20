@@ -15,10 +15,10 @@ on:
       serviceName:
         description: 'Provide the service name you want to build'
         required: true
-      dbMigration:
-        description: Enable if you require db migration to this service
-        required: true
-        type: boolean
+      # dbMigration:
+      #   description: Enable if you require db migration to this service
+      #   required: true
+      #   type: boolean
       libraries:
         description: Enable if you want to upload to libraries
         required: true
@@ -63,15 +63,15 @@ jobs:
         run: |
           echo ${{ env.folder_exists }}
 
-      # - name: Build and push
-      #   if: ${{ github.event.inputs.libraries == 'false' }}
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: build/maven/Dockerfile
-      #     push: true
-      #     tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}
-      #     build-args: WORK_DIR=${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}
+      - name: Build and push
+        if: ${{ github.event.inputs.libraries == 'false' }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: build/maven/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}
+          build-args: WORK_DIR=${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}
       
       - name: DB Build and push
         # if: ${{ github.event.inputs.dbMigration && github.event.inputs.libraries == 'false' }} 
@@ -84,7 +84,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}-db:${{ env.BRANCH }}
 
       - name: Libraries Build and push
-        if: ${{ github.event.inputs.libraries }} 
+        if: ${{ github.event.inputs.libraries == 'true' }} 
         uses: docker/build-push-action@v5
         with:
           context: .
