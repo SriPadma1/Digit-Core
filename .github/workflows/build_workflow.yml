@@ -63,15 +63,15 @@ jobs:
         run: |
           echo ${{ env.folder_exists }}
 
-      - name: Build and push
-        if: ${{ github.event.inputs.libraries == 'false' }}
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: build/maven/Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}
-          build-args: WORK_DIR=${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}
+      # - name: Build and push
+      #   if: ${{ github.event.inputs.libraries == 'false' }}
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     file: build/maven/Dockerfile
+      #     push: true
+      #     tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}
+      #     build-args: WORK_DIR=${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}
       
       - name: DB Build and push
         # if: ${{ github.event.inputs.dbMigration && github.event.inputs.libraries == 'false' }} 
