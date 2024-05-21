@@ -31,13 +31,10 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v4
 
-      - name: What
+      - name: Display branch
         run: |
           echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
           echo "BRANCH=${GITHUB_REF##*/}"
-
-      - name: Display branch name
-        run: git branch
       
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -116,6 +113,11 @@ jobs:
             WORK_DIR=${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
             nexusUsername=${{ secrets.NEXUS_USER }}
             nexusPassword=${{ secrets.NEXUS_PWD }}
+
+      - name: Display Image details
+        run: |
+          echo "${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.NEW_TAG }}"
+          echo "${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}-db:${{ env.NEW_TAG }}"
 
       # - name: Build Libraries
       #   if: ${{ github.event.inputs.libraries }} 
