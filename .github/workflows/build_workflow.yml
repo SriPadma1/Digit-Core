@@ -63,6 +63,12 @@ jobs:
         run: |
           echo ${{ env.folder_exists }}
 
+      - name: Set Docker Image Tag
+        run: echo "IMAGE_TAG=${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}-${{ github.sha }}" >> $GITHUB_ENV
+
+      - name: Display Docker Image Tag
+        run: echo "Docker Image Tag: ${{ env.IMAGE_TAG }}"
+
       - name: Build and push
         if: ${{ github.event.inputs.libraries == 'false' }}
         uses: docker/build-push-action@v5
@@ -70,7 +76,7 @@ jobs:
           context: .
           file: build/maven/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}
+          tags: ${{ env.IMAGE_TAG }}
           build-args: WORK_DIR=${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}
       
       - name: DB Build and push
