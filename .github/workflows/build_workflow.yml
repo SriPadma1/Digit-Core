@@ -63,11 +63,26 @@ jobs:
         run: |
           echo ${{ env.folder_exists }}
 
-      - name: Set Docker Image Tag
-        run: echo "IMAGE_TAG=${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}-${{ github.sha }}" >> $GITHUB_ENV
+      - name: Get the latest tag
+        id: get_tag
+        run: |
+          TAG=$(git tag --list "${{ env.BRANCH }}-*.*" --sort=-v:refname | head -n 1)
+          echo "Latest tag: $TAG"
+          if [ -z "$TAG" ]; then
+            echo "TAG_NUMBER=0" >> $GITHUB_ENV
+          else
+            TAG_NUMBER=$(echo $TAG | awk -F- '{print $NF}')
+            echo "TAG_NUMBER=$TAG_NUMBER" >> $GITHUB_ENV
+          fi
 
-      - name: Display Docker Image Tag
-        run: echo "${{ env.IMAGE_TAG }}"
+      - name: Increment the tag number
+        id: increment_tag
+        run: |
+          NEW_TAG_NUMBER=$((TAG_NUMBER+1))
+          echo "NEW_TAG_NUMBER=$NEW_TAG_NUMBER" >> $GITHUB_ENV
+          NEW_TAG="${{ env.BRANCH }}-$NEW_TAG_NUMBER"
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+          echo "New tag: $NEW_TAG"
 
       - name: Build and push
         if: ${{ github.event.inputs.libraries == 'false' }}
@@ -76,7 +91,7 @@ jobs:
           context: .
           file: build/maven/Dockerfile
           push: true
-          tags: ${{ env.IMAGE_TAG }}
+          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.NEW_TAG }}
           build-args: WORK_DIR=${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}
       
       - name: DB Build and push
@@ -87,7 +102,7 @@ jobs:
           context: ${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}/src/main/resources/db
           file: ${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}/src/main/resources/db/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}-db:${{ env.BRANCH }}
+          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}-db:${{ env.NEW_TAG }}
 
       - name: Libraries Build and push
         if: ${{ github.event.inputs.libraries == 'true' }} 
@@ -96,7 +111,7 @@ jobs:
           context: .
           file: ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.BRANCH }}
+          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.NEW_TAG }}
           build-args: |
             WORK_DIR=${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
             nexusUsername=${{ secrets.NEXUS_USER }}
