@@ -63,7 +63,7 @@ jobs:
         id: get_docker_tags
         run: |
           # Fetch tags from Docker Hub
-          TAGS=$(curl -s "https://hub.docker.com/v2/repositories/<namespace>/<service>/tags?page_size=100" | jq -r '.results[].name')
+          TAGS=$(curl -s "https://hub.docker.com/v2/repositories/${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}/tags?page_size=100" | jq -r '.results[].name')
       
           # Filter tags for the specific branch
           LATEST_TAG=$(echo "$TAGS" | grep "^${{ env.BRANCH }}-" | sort -V | tail -n 1)
