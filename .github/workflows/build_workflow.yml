@@ -59,6 +59,16 @@ jobs:
       - name: check DB Environment Variable
         run: |
           echo ${{ env.folder_exists }}
+      - name: Get tags from Docker Hub
+        id: get_docker_tags
+        run: |
+          # Fetch tags from Docker Hub
+          TAGS=$(curl -s "https://hub.docker.com/v2/repositories/<namespace>/<service>/tags?page_size=100" | jq -r '.results[].name')
+      
+          # Filter tags for the specific branch
+          LATEST_TAG=$(echo "$TAGS" | grep "^${{ env.BRANCH }}-" | sort -V | tail -n 1)
+      
+          echo "Latest tag: $LATEST_TAG"
 
       - name: Get the latest tag
         id: get_tag
