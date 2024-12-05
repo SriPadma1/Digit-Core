@@ -64,32 +64,39 @@ jobs:
         run: |
           # Fetch tags from Docker Hub
           TAGS=$(curl -s "https://hub.docker.com/v2/repositories/${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}/tags?page_size=100" | jq -r '.results[].name')
-      
           # Filter tags for the specific branch
           LATEST_TAG=$(echo "$TAGS" | grep "^${{ env.BRANCH }}-" | sort -V | tail -n 1)
-      
           echo "Latest tag: $LATEST_TAG"
 
-      - name: Get the latest tag
-        id: get_tag
-        run: |
-          TAG=$(git tag --list "${{ env.BRANCH }}-*.*" --sort=-v:refname | head -n 1)
-          echo "Latest tag: $TAG"
-          if [ -z "$TAG" ]; then
-            echo "TAG_NUMBER=0" >> $GITHUB_ENV
+          if [ -z "$LATEST_TAG" ]; then
+            echo "NEXT_TAG=${{ env.BRANCH }}-1" >> $GITHUB_ENV
           else
-            TAG_NUMBER=$(echo $TAG | awk -F- '{print $NF}')
-            echo "TAG_NUMBER=$TAG_NUMBER" >> $GITHUB_ENV
+            # Extract the numerical part and increment it
+            TAG_NUMBER=$(echo "$LATEST_TAG" | awk -F- '{print $NF}')
+            NEXT_TAG="${{ env.BRANCH }}-$((TAG_NUMBER + 1))"
+            echo "NEXT_TAG=$NEXT_TAG" >> $GITHUB_ENV
           fi
 
-      - name: Increment the tag number
-        id: increment_tag
-        run: |
-          NEW_TAG_NUMBER=$((TAG_NUMBER+1))
-          echo "NEW_TAG_NUMBER=$NEW_TAG_NUMBER" >> $GITHUB_ENV
-          NEW_TAG="${{ env.BRANCH }}-$NEW_TAG_NUMBER"
-          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
-          echo "New tag: $NEW_TAG"
+      # - name: Get the latest tag
+      #   id: get_tag
+      #   run: |
+      #     TAG=$(git tag --list "${{ env.BRANCH }}-*.*" --sort=-v:refname | head -n 1)
+      #     echo "Latest tag: $TAG"
+      #     if [ -z "$TAG" ]; then
+      #       echo "TAG_NUMBER=0" >> $GITHUB_ENV
+      #     else
+      #       TAG_NUMBER=$(echo $TAG | awk -F- '{print $NF}')
+      #       echo "TAG_NUMBER=$TAG_NUMBER" >> $GITHUB_ENV
+      #     fi
+
+      # - name: Increment the tag number
+      #   id: increment_tag
+      #   run: |
+      #     NEW_TAG_NUMBER=$((TAG_NUMBER+1))
+      #     echo "NEW_TAG_NUMBER=$NEW_TAG_NUMBER" >> $GITHUB_ENV
+      #     NEW_TAG="${{ env.BRANCH }}-$NEW_TAG_NUMBER"
+      #     echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+      #     echo "New tag: $NEW_TAG"
 
       - name: Build and push
         if: ${{ github.event.inputs.libraries == 'false' }}
@@ -98,7 +105,7 @@ jobs:
           context: .
           file: build/maven/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.NEW_TAG }}
+          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.NEXT_TAG }}
           build-args: WORK_DIR=${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}
       
       - name: DB Build and push
@@ -109,7 +116,7 @@ jobs:
           context: ${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}/src/main/resources/db
           file: ${{ github.event.inputs.folder }}/${{ github.event.inputs.serviceName }}/src/main/resources/db/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}-db:${{ env.NEW_TAG }}
+          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}-db:${{ env.NEXT_TAG }}
 
       - name: Libraries Build and push
         if: ${{ github.event.inputs.libraries == 'true' }} 
@@ -118,7 +125,7 @@ jobs:
           context: .
           file: ${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.NEW_TAG }}
+          tags: ${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.NEXT_TAG }}
           build-args: |
             WORK_DIR=${{ github.event.inputs.folder }}/libraries/${{ github.event.inputs.serviceName }}
             nexusUsername=${{ secrets.NEXUS_USER }}
@@ -126,8 +133,8 @@ jobs:
 
       - name: Display Image details
         run: |
-          echo "${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.NEW_TAG }}"
-          echo "${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}-db:${{ env.NEW_TAG }}"
+          echo "${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}:${{ env.NEXT_TAG }}"
+          echo "${{ secrets.DOCKERHUB_USER }}/${{ github.event.inputs.serviceName }}-db:${{ env.NEXT_TAG }}"
 
       # - name: Build Libraries
       #   if: ${{ github.event.inputs.libraries }} 
